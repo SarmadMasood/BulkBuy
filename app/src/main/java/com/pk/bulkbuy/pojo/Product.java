@@ -14,6 +14,15 @@ public class Product implements Serializable {
     @SerializedName("name")
     @Expose
     private String name;
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
     @SerializedName("date_added")
     @Expose
     private String dateAdded;
@@ -26,6 +35,9 @@ public class Product implements Serializable {
     @SerializedName("price_range")
     @Expose
     private String price_range;
+    @SerializedName("imageURL")
+    @Expose
+    private String imageURL;
 
     private Boolean isShortlisted = false;
 

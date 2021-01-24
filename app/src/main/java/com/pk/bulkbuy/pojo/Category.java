@@ -16,7 +16,7 @@ public class Category implements Serializable {
     @SerializedName("products")
     @Expose
     private List<Product> products = null;
-    @SerializedName("child_categories")
+    @SerializedName("childCategories")
     @Expose
     private List<Integer> childCategories = null;
 

@@ -6,9 +6,16 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pk.bulkbuy.R;
 import com.pk.bulkbuy.database.DB_Handler;
 import com.pk.bulkbuy.pojo.Category;
@@ -16,12 +23,19 @@ import com.pk.bulkbuy.pojo.Product;
 import com.pk.bulkbuy.pojo.ProductRank;
 import com.pk.bulkbuy.pojo.Ranking;
 import com.pk.bulkbuy.pojo.ResponseJSON;
+import com.pk.bulkbuy.pojo.Tax;
 import com.pk.bulkbuy.pojo.Variant;
 import com.pk.bulkbuy.utils.Util;
 import com.pk.bulkbuy.webservice.RetrofitBuilder;
 import com.pk.bulkbuy.webservice.RetrofitInterface;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.UUID;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -37,6 +51,9 @@ public class SyncDBService extends IntentService {
 
     DB_Handler db_handler;
     Intent intent;
+    FirebaseDatabase database;
+    DatabaseReference catRef;
+    DatabaseReference subcatRef;
 
     public SyncDBService(String name) {
         super(name);
@@ -49,8 +66,130 @@ public class SyncDBService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         db_handler = new DB_Handler(this);
-        fetchData();
+        database = FirebaseDatabase.getInstance();
+        catRef = database.getReference().child("Categories");
+        subcatRef = database.getReference().child("Categories").child("2");
+
+        putData();
+        fetchAndProcessData();
+       // fetchData();
         this.intent = intent;
+    }
+
+    private void putData(){
+        Integer id = 123;
+        Product product = new Product();
+        product.setId(id);
+        product.setName("Apple Macbook Pro");
+        Tax tax = new Tax();
+        tax.setName("tax");
+        tax.setValue(786.0);
+        product.setTax(tax);
+        product.setShortlisted(false);
+        product.setPrice_range("1299$-2199$");
+        product.setDateAdded("01-24-2021");
+        product.setImageURL("https://i2.wp.com/megastore.pk/wp-content/uploads/2020/10/macbook-pro-13-og-202005-2.jpg");
+
+        List<Variant> variants = new ArrayList<>();
+        Variant variant1 = new Variant();
+        variant1.setId(1);
+        variant1.setSize("13 inch");
+        variant1.setColor("Rose Gold");
+        variant1.setPrice("1299");
+
+        Variant variant2 = new Variant();
+        variant2.setId(2);
+        variant2.setSize("15 inch");
+        variant2.setPrice("2199");
+        variant2.setColor("Space Grey");
+        variants.add(variant1);
+        variants.add(variant2);
+        product.setVariants(variants);
+        List<Product> products = new ArrayList<>();
+        products.add(product);
+
+        Category category = new Category();
+        category.setId(11);
+        category.setName("Laptops");
+        category.setProducts(products);
+
+        Category subcategory = new Category();
+        subcategory.setId(111);
+        subcategory.setName("Apple Laptops");
+
+        List<Integer> subcategories = new ArrayList<>();
+        subcategories.add(subcategory.getId());
+        category.setChildCategories(subcategories);
+        catRef.child("1").setValue(category);
+        subcatRef.setValue(subcategory);
+    }
+
+    private void fetchAndProcessData(){
+        final List<Category> categories = new ArrayList<>();
+        catRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int size = (int) snapshot.getChildrenCount();
+                for (int i=0;i<size;i++){
+                    categories.add(snapshot.child(String.valueOf(i+1)).getValue(Category.class));
+                }
+
+
+
+                for (int k=0;k<categories.size();k++) {
+                    System.out.println("category "+k+"\n"+categories.get(k));
+                    Category category = categories.get(k);
+                    final int CategoryID = category.getId();
+                    String CategoryName = category.getName();
+
+                    // insert category into local DB
+                    db_handler.insertCategories(CategoryID, CategoryName);
+
+                    List<Product> productList = category.getProducts();
+                    if (productList!=null){
+                        for (int j = 0; j < productList.size(); j++) {
+                            Integer ProductID = productList.get(j).getId();
+                            String ProductName = productList.get(j).getName();
+                            String imageURL = productList.get(j).getImageURL();
+                            String Date = productList.get(j).getDateAdded();
+                            String TaxName = productList.get(j).getTax().getName();
+                            Double TaxValue = productList.get(j).getTax().getValue();
+
+                            // insert products into local DB
+                            db_handler.insertProducts(ProductID, CategoryID, ProductName, Date, TaxName, TaxValue);
+
+                            // Get Variants
+                            List<Variant> variantList = productList.get(j).getVariants();
+                            for (int p = 0; p < variantList.size(); p++) {
+                                int VariantID = variantList.get(p).getId();
+                                String Size = null;
+                                String Color = variantList.get(p).getColor();
+                                String Price = String.valueOf(variantList.get(p).getPrice());
+
+                                try {
+                                    // Size May Produce NullPointerException
+                                    Size = variantList.get(p).getSize().toString();
+                                } catch (NullPointerException ignore) {
+                                }
+
+                                // insert variants into local DB
+                                db_handler.insertVariants(VariantID, Size, Color, Price, ProductID);
+
+                                List<Integer> childCategories = category.getChildCategories();
+                                for (int l = 0; l < childCategories.size(); l++) {
+                                    int SubcategoryID = childCategories.get(l);
+
+                                    // insert childs into subcategory mapping
+                                    db_handler.insertChildCategoryMapping(CategoryID, SubcategoryID);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 
     // Fetch Data From URL
@@ -99,7 +238,7 @@ public class SyncDBService extends IntentService {
                 // Get Products
                 List<Product> productList = responseJSON.getCategories().get(i).getProducts();
                 for (int j = 0; j < productList.size(); j++) {
-                    int ProductID = productList.get(j).getId();
+                    Integer ProductID = productList.get(j).getId();
                     String ProductName = productList.get(j).getName();
                     String Date = productList.get(j).getDateAdded();
                     String TaxName = productList.get(j).getTax().getName();
@@ -121,7 +260,6 @@ public class SyncDBService extends IntentService {
                             Size = variantList.get(p).getSize().toString();
                         } catch (NullPointerException ignore) {
                         }
-
                         // insert variants into local DB
                         db_handler.insertVariants(VariantID, Size, Color, Price, ProductID);
                     }

@@ -5,8 +5,13 @@ import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -49,6 +54,7 @@ public class Products extends Fragment {
     List<String> colorFilter = new ArrayList<>();
     ProductListAdapter productListAdapter;
     List<Product> productList;
+    Menu menu;
 
     ToolbarTitle toolbarTitleCallback;
     ShowBackButton showBackButtonCallback;
@@ -66,7 +72,7 @@ public class Products extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.product_list, container, false);
-
+        setHasOptionsMenu(true);
         setIds(view);
         setSortListener();
         setFilterListener();
@@ -87,6 +93,29 @@ public class Products extends Fragment {
         fillGridView();
         return view;
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuInflater menuInflater = getActivity().getMenuInflater();
+        menuInflater.inflate(R.menu.search_menu,menu);
+        this.menu = menu;
+
+        MenuItem menuItem = menu.findItem(R.id.search_view);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                productListAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

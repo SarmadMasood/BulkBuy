@@ -535,7 +535,7 @@ public class DB_Handler extends SQLiteOpenHelper {
             variant.setId(cursor.getInt(cursor.getColumnIndex(ID)));
             variant.setColor(cursor.getString(cursor.getColumnIndex(COLOR)));
             variant.setPrice(cursor.getString(cursor.getColumnIndex(PRICE)));
-            variant.setSize(cursor.getDouble(cursor.getColumnIndex(SIZE)));
+            variant.setSize(cursor.getString(cursor.getColumnIndex(SIZE)));
         }
         cursor.close();
         db.close();

@@ -43,15 +43,20 @@ public class SplashActivity extends AppCompatActivity implements FinishActivity 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Service To Fetch Data From URL
-        setHandler();
-        startIntentService();
+//        // Service To Fetch Data From URL
+//        setHandler();
+//        startIntentService();
 
         // Initialize DB Handler
         db_handler = new DB_Handler(this);
 
         setIds();
         setClickListeners();
+        //fetch some data here
+        checkSession();
+        // Service To Fetch Data From URL
+        setHandler();
+        startIntentService();
     }
 
     // Set Ids
@@ -131,6 +136,7 @@ public class SplashActivity extends AppCompatActivity implements FinishActivity 
                     Bundle reply = msg.getData();
                     if (reply.getString("message").equals("success")) {
                         checkSession();
+
                     } else {
                         // Show Error In Snack Bar
                         try {

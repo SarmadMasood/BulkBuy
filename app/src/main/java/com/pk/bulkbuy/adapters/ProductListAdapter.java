@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,21 +22,25 @@ import com.pk.bulkbuy.database.SessionManager;
 import com.pk.bulkbuy.pojo.Product;
 import com.pk.bulkbuy.utils.Constants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Preeth on 1/4/18
  */
 
-public class ProductListAdapter extends BaseAdapter {
+public class ProductListAdapter extends BaseAdapter implements Filterable {
 
     private Context context;
     private LayoutInflater inflater;
     private List<Product> productList;
+    private ValueFilter valueFilter;
+    private List<Product> mStringFilterList;
 
     public ProductListAdapter(Context context, List<Product> productList) {
         this.context = context;
         this.productList = productList;
+        mStringFilterList = productList;
         inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -112,7 +118,59 @@ public class ProductListAdapter extends BaseAdapter {
         return rowView;
     }
 
-    public class Holder {
+    @Override
+    public Filter getFilter() {
+        if(valueFilter==null) {
+
+            valueFilter=new ValueFilter();
+        }
+
+        return valueFilter;
+    }
+    private class ValueFilter extends Filter {
+
+        //Invoked in a worker thread to filter the data according to the constraint.
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results=new FilterResults();
+            if(constraint!=null && constraint.length()>0){
+                ArrayList<Product> filterList=new ArrayList<Product>();
+                for(int i=0;i<mStringFilterList.size();i++){
+                    if((mStringFilterList.get(i).getName().toUpperCase())
+                            .contains(constraint.toString().toUpperCase())) {
+                        Product product = new Product();
+                        product.setName(mStringFilterList.get(i).getName());
+                        product.setId(mStringFilterList.get(i).getId());
+                        product.setDateAdded(mStringFilterList.get(i).getDateAdded());
+                        product.setPrice_range(mStringFilterList.get(i).getPrice_range());
+                        product.setShortlisted(mStringFilterList.get(i).getShortlisted());
+                        product.setTax(mStringFilterList.get(i).getTax());
+                        product.setVariants(mStringFilterList.get(i).getVariants());
+                        filterList.add(product);
+                    }
+                }
+                results.count=filterList.size();
+                results.values=filterList;
+            }else{
+                results.count=mStringFilterList.size();
+                results.values=mStringFilterList;
+            }
+            return results;
+        }
+
+
+        //Invoked in the UI thread to publish the filtering results in the user interface.
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+            productList=(ArrayList<Product>) results.values;
+            notifyDataSetChanged();
+        }
+    }
+
+
+public class Holder {
         RelativeLayout itemLay;
         TextView name, price;
         ImageView heart;

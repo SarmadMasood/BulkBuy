@@ -14,7 +14,7 @@ public class Variant {
     private String color;
     @SerializedName("size")
     @Expose
-    private Object size;
+    private String size;
     @SerializedName("price")
     @Expose
     private String price;
@@ -35,11 +35,11 @@ public class Variant {
         this.color = color;
     }
 
-    public Object getSize() {
+    public String getSize() {
         return size;
     }
 
-    public void setSize(Object size) {
+    public void setSize(String  size) {
         this.size = size;
     }
 

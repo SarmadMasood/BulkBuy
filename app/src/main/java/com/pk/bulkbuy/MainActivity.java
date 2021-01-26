@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements Subcategories.Chi
     private void callProductsFragment() {
 
         Bundle args = new Bundle();
-        args.putInt(Constants.CAT_ID_KEY, 0);
+        args.putString(Constants.CAT_ID_KEY, null);
 
         Products products = new Products();
         products.setArguments(args);
@@ -177,28 +177,6 @@ public class MainActivity extends AppCompatActivity implements Subcategories.Chi
             count.setVisibility(View.GONE);
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.search_menu,menu);
-//        this.menu = menu;
-//
-//        MenuItem menuItem = menu.findItem(R.id.search_view);
-//        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                return false;
-//            }
-//        });
-//        return super.onCreateOptionsMenu(menu);
-//    }
 
     // Back Button Click
     private void backButtonClick() {

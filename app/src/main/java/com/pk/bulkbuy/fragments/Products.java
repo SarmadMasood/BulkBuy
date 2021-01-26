@@ -48,7 +48,8 @@ public class Products extends Fragment {
     RelativeLayout sort, filter;
     TextView sortByText;
     String[] sortByArray = {"Most Recent", "Most Orders", "Most Shares", "Most Viewed"};
-    int sortById = 0, cat_id = 0;
+    String cat_id = null;
+    int sortById = 0;
     GridView productsGrid;
     List<String> sizeFilter = new ArrayList<>();
     List<String> colorFilter = new ArrayList<>();
@@ -80,9 +81,9 @@ public class Products extends Fragment {
         // get category id
         Bundle args = getArguments();
         assert args != null;
-        cat_id = args.getInt(Constants.CAT_ID_KEY);
+        cat_id = args.getString(Constants.CAT_ID_KEY);
 
-        if (cat_id > 0) {
+        if (cat_id !=null) {
             // Show Back Button and Set Title
             showBackButtonCallback.showBackButton();
             toolbarTitleCallback.setToolbarTitle(args.getString(Constants.TITLE));
@@ -129,6 +130,7 @@ public class Products extends Fragment {
             List<Product> productList = db_handler.getProductsList(sortById, sizeFilter, colorFilter, cat_id, sessionManager.getSessionData(Constants.SESSION_EMAIL));
             this.productList.clear();
             this.productList.addAll(productList);
+
             productListAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
@@ -228,10 +230,10 @@ public class Products extends Fragment {
                     public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
                         switch (groupPosition) {
                             case 0: // Size
-                                if (!sizeFilter.contains(sizes.get(childPosition))) {
-                                    sizeFilter.add(sizes.get(childPosition));
+                                if (!sizeFilter.contains("'" + sizes.get(childPosition) + "'")) {
+                                    sizeFilter.add("'" + sizes.get(childPosition) + "'");
                                 } else {
-                                    sizeFilter.remove(sizes.get(childPosition));
+                                    sizeFilter.remove("'" + sizes.get(childPosition) + "'");
                                 }
                                 break;
 

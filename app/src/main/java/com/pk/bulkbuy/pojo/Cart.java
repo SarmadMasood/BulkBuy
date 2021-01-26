@@ -6,16 +6,25 @@ package com.pk.bulkbuy.pojo;
 
 public class Cart {
 
-    private Integer id;
+    private String id;
     private Integer itemQuantity;
     private Product product;
     private Variant variant;
+    private String status;
 
-    public Integer getId() {
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

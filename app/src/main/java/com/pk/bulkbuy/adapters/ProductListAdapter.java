@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +16,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.arch.core.executor.TaskExecutor;
 import com.pk.bulkbuy.R;
 import com.pk.bulkbuy.activities.ProductDetails;
 import com.pk.bulkbuy.database.DB_Handler;
 import com.pk.bulkbuy.database.SessionManager;
 import com.pk.bulkbuy.pojo.Product;
 import com.pk.bulkbuy.utils.Constants;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,9 +77,14 @@ public class ProductListAdapter extends BaseAdapter implements Filterable {
         holder.name = rowView.findViewById(R.id.name);
         holder.price = rowView.findViewById(R.id.price);
         holder.heart = rowView.findViewById(R.id.heart);
+        holder.imageView = rowView.findViewById(R.id.product_image);
 
         holder.name.setText(productList.get(position).getName());
         holder.price.setText(productList.get(position).getPrice_range());
+
+        String imageURL = productList.get(position).getImageURL();
+
+        Picasso.get().load(imageURL).fit().error(R.drawable.ic_image_grey600_36dp).into(holder.imageView);
 
         // Product Item Click
         holder.itemLay = rowView.findViewById(R.id.itemLay);
@@ -146,6 +157,7 @@ public class ProductListAdapter extends BaseAdapter implements Filterable {
                         product.setShortlisted(mStringFilterList.get(i).getShortlisted());
                         product.setTax(mStringFilterList.get(i).getTax());
                         product.setVariants(mStringFilterList.get(i).getVariants());
+                        product.setImageURL(mStringFilterList.get(i).getImageURL());
                         filterList.add(product);
                     }
                 }
@@ -174,5 +186,6 @@ public class Holder {
         RelativeLayout itemLay;
         TextView name, price;
         ImageView heart;
+        ImageView imageView;
     }
 }

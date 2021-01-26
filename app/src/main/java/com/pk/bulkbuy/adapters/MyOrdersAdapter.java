@@ -11,13 +11,29 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pk.bulkbuy.R;
 import com.pk.bulkbuy.activities.ProductDetails;
+import com.pk.bulkbuy.database.DB_Handler;
+import com.pk.bulkbuy.database.SessionManager;
 import com.pk.bulkbuy.pojo.Cart;
+import com.pk.bulkbuy.utils.Constants;
 import com.pk.bulkbuy.utils.Util;
+import com.squareup.picasso.Picasso;
 
+import java.io.StringReader;
 import java.util.List;
+
+import static android.content.Context.SYSTEM_HEALTH_SERVICE;
+import static com.pk.bulkbuy.service.SyncDBService.charRemoveAt;
 
 /**
  * Created by Preeth on 1/7/2018
@@ -28,10 +44,12 @@ public class MyOrdersAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater inflater;
     private List<Cart> shoppingCart;
+    private FirebaseDatabase database;
 
     public MyOrdersAdapter(Context context, List<Cart> shoppingCart) {
         this.context = context;
         this.shoppingCart = shoppingCart;
+        database = FirebaseDatabase.getInstance();
         inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -67,6 +85,15 @@ public class MyOrdersAdapter extends BaseAdapter {
         holder.qty = rowView.findViewById(R.id.quantity);
         holder.remove = rowView.findViewById(R.id.remove);
         holder.qtyLay = rowView.findViewById(R.id.qtyLay);
+        holder.status = rowView.findViewById(R.id.orderStatus);
+        holder.imageView = rowView.findViewById(R.id.cart_img);
+        holder.status.setVisibility(View.VISIBLE);
+        if (shoppingCart.get(position).getStatus().compareToIgnoreCase("verified")==0){
+            holder.status.setImageResource(R.drawable.verified);
+        }
+
+        String imageURL = shoppingCart.get(position).getProduct().getImageURL();
+        Picasso.get().load(imageURL).fit().error(R.drawable.ic_image_grey600_36dp).into(holder.imageView);
 
         holder.title.setText(shoppingCart.get(position).getProduct().getName());
         holder.color.setText("Color: " + shoppingCart.get(position).getVariant().getColor());
@@ -106,7 +133,28 @@ public class MyOrdersAdapter extends BaseAdapter {
         });
 
         // Hide Remove Button
-        holder.remove.setVisibility(View.GONE);
+        //holder.remove.setVisibility(View.GONE);
+        holder.remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Delete Item From DB
+                DB_Handler db_handler = new DB_Handler(context);
+                final String id = shoppingCart.get(position).getId();
+                if (db_handler.deleteOrder(id)) {
+                    shoppingCart.remove(position);
+                    notifyDataSetChanged();
+
+                    SessionManager sessionManager = new SessionManager(context);
+                    String sessionEmail = sessionManager.getSessionData(Constants.SESSION_EMAIL);
+                    sessionEmail = charRemoveAt(sessionEmail,sessionEmail.indexOf('.'));
+                    final DatabaseReference ordersRef = database.getReference().child("Orders").child(sessionEmail).child(id);
+                    ordersRef.removeValue();
+                } else {
+                    Toast.makeText(context, "error deleting item", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         // Hide Quantity Update Buttons
         holder.qtyLay.setVisibility(View.GONE);
@@ -122,6 +170,6 @@ public class MyOrdersAdapter extends BaseAdapter {
         RelativeLayout itemLay;
         LinearLayout qtyLay;
         TextView title, price, size, color, tax, qty;
-        ImageView remove;
+        ImageView remove, status, imageView;
     }
 }

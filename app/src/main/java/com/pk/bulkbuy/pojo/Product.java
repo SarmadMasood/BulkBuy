@@ -10,19 +10,10 @@ public class Product implements Serializable {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
     @SerializedName("name")
     @Expose
     private String name;
-
-    public String getImageURL() {
-        return imageURL;
-    }
-
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
-    }
-
     @SerializedName("date_added")
     @Expose
     private String dateAdded;
@@ -39,6 +30,10 @@ public class Product implements Serializable {
     @Expose
     private String imageURL;
 
+    public String getImageURL() { return imageURL; }
+
+    public void setImageURL(String imageURL) { this.imageURL = imageURL; }
+
     private Boolean isShortlisted = false;
 
     public Boolean getShortlisted() {
@@ -49,11 +44,11 @@ public class Product implements Serializable {
         isShortlisted = shortlisted;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

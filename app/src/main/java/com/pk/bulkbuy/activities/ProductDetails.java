@@ -20,6 +20,7 @@ import com.pk.bulkbuy.database.SessionManager;
 import com.pk.bulkbuy.pojo.Product;
 import com.pk.bulkbuy.pojo.Variant;
 import com.pk.bulkbuy.utils.Constants;
+import com.squareup.picasso.Picasso;
 
 import org.apmem.tools.layouts.FlowLayout;
 
@@ -38,7 +39,7 @@ public class ProductDetails extends AppCompatActivity {
     String selectedColor = null;
     String selectedItemPrice = null;
     int selectedItemQuantity = 1;
-    int selectedItemVariantId = 0;
+    String selectedItemVariantId;
     String userEmail = null;
 
     LinearLayout colorParentLay, sizeParentLay;
@@ -78,7 +79,7 @@ public class ProductDetails extends AppCompatActivity {
         userEmail = sessionManager.getSessionData(Constants.SESSION_EMAIL);
 
         // Get Product Id
-        int id = getIntent().getIntExtra("ProductId", 0);
+        String id = getIntent().getStringExtra("ProductId");
 
         // Get Product Details By Id
         db_handler = new DB_Handler(this);
@@ -204,6 +205,9 @@ public class ProductDetails extends AppCompatActivity {
         // Title
         TextView Title = findViewById(R.id.title);
         Title.setText(product.getName());
+
+        ImageView imageView = findViewById(R.id.detail_image);
+        Picasso.get().load(product.getImageURL()).fit().error(R.drawable.ic_image_grey600_36dp).into(imageView);
 
         // Size
         List<String> sizeList = db_handler.getSizeByProductId(product.getId());

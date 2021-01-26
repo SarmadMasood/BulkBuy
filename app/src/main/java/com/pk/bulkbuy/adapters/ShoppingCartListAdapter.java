@@ -17,6 +17,7 @@ import com.pk.bulkbuy.activities.ProductDetails;
 import com.pk.bulkbuy.database.DB_Handler;
 import com.pk.bulkbuy.pojo.Cart;
 import com.pk.bulkbuy.utils.Util;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -79,6 +80,7 @@ public class ShoppingCartListAdapter extends BaseAdapter {
         holder.remove = rowView.findViewById(R.id.remove);
         holder.minus = rowView.findViewById(R.id.minus);
         holder.plus = rowView.findViewById(R.id.plus);
+        holder.imageView = rowView.findViewById(R.id.cart_img);
 
         holder.title.setText(shoppingCart.get(position).getProduct().getName());
         holder.color.setText("Color: " + shoppingCart.get(position).getVariant().getColor());
@@ -103,7 +105,9 @@ public class ShoppingCartListAdapter extends BaseAdapter {
         holder.qty.setText(String.valueOf(quantity[0]));
         holder.price.setText("Rs." + Util.formatDouble(calculatePrice(taxValue, priceValue, quantity[0])));
         holder.tax.setText("(" + taxName + ": Rs." + taxValue + ")");
+        String imageURL = shoppingCart.get(position).getProduct().getImageURL();
 
+        Picasso.get().load(imageURL).fit().error(R.drawable.ic_image_grey600_36dp).into(holder.imageView);
 
         // Product Item Click
         holder.itemLay = rowView.findViewById(R.id.itemLay);
@@ -190,6 +194,6 @@ public class ShoppingCartListAdapter extends BaseAdapter {
     public class Holder {
         RelativeLayout itemLay;
         TextView title, price, size, color, tax, qty;
-        ImageView remove, minus, plus;
+        ImageView remove, minus, plus, imageView;
     }
 }

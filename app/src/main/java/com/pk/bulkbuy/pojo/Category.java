@@ -9,7 +9,7 @@ public class Category implements Serializable {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String  id;
     @SerializedName("name")
     @Expose
     private String name;
@@ -18,13 +18,13 @@ public class Category implements Serializable {
     private List<Product> products = null;
     @SerializedName("childCategories")
     @Expose
-    private List<Integer> childCategories = null;
+    private List<String> childCategories = null;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -44,11 +44,11 @@ public class Category implements Serializable {
         this.products = products;
     }
 
-    public List<Integer> getChildCategories() {
+    public List<String> getChildCategories() {
         return childCategories;
     }
 
-    public void setChildCategories(List<Integer> childCategories) {
+    public void setChildCategories(List<String> childCategories) {
         this.childCategories = childCategories;
     }
 

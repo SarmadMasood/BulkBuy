@@ -70,7 +70,7 @@ public class SubcategoryGridAdapter extends BaseAdapter {
         holder.gridItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int id = subCategoryList.get(position).getId();
+                String id = subCategoryList.get(position).getId();
 
                 // get subcategories by id
                 List<Category> childCategories = db_handler.getSubcategoryList(id);
@@ -95,7 +95,7 @@ public class SubcategoryGridAdapter extends BaseAdapter {
                     ft.commit();
                 } else {
                     // add bundle arguments
-                    bundle.putInt(Constants.CAT_ID_KEY, id);
+                    bundle.putString(Constants.CAT_ID_KEY, id);
                     bundle.putString(Constants.TITLE,subCategoryList.get(position).getName());
 
                     Products products = new Products();

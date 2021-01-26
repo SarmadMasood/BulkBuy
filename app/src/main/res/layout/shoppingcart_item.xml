@@ -14,7 +14,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/img"
+            android:id="@+id/cart_img"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_margin="@dimen/defaultMargin"
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/defaultMargin"
-            android:layout_toRightOf="@+id/img"
+            android:layout_toRightOf="@+id/cart_img"
             android:text="Sample"
             android:textColor="@color/black"
             android:textSize="16sp" />
@@ -74,6 +74,16 @@
         android:layout_alignParentRight="true"
         android:layout_margin="@dimen/defaultMargin"
         android:src="@drawable/ic_close_grey600_24dp" />
+
+    <ImageView
+        android:id="@+id/orderStatus"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:visibility="gone"
+        android:src="@drawable/pending"
+        android:layout_marginRight="125dp"
+        android:layout_marginTop="25dp"
+        android:layout_alignParentRight="true" />
 
     <LinearLayout
         android:id="@+id/qtyLay"

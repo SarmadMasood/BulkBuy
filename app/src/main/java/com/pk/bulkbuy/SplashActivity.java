@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
-
 import com.pk.bulkbuy.database.DB_Handler;
 import com.pk.bulkbuy.database.SessionManager;
 import com.pk.bulkbuy.fragments.SignIn;

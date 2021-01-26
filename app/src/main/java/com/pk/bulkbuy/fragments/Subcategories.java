@@ -61,13 +61,14 @@ public class Subcategories extends Fragment {
 
         // fill gridview with data
         GridView gv = view.findViewById(R.id.productsGrid);
-        assert childCategories != null;
-        if (childCategories.size() >= 3) {
-            gv.setNumColumns(3);
-        } else if (childCategories.size() >= 2) {
-            gv.setNumColumns(2);
-        } else {
-            gv.setNumColumns(1);
+        if(childCategories != null){
+            if (childCategories.size() >= 3) {
+                gv.setNumColumns(3);
+            } else if (childCategories.size() >= 2) {
+                gv.setNumColumns(2);
+            } else {
+                gv.setNumColumns(1);
+            }
         }
         gv.setAdapter(new SubcategoryGridAdapter(getActivity(), childCategories));
 

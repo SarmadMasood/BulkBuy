@@ -70,7 +70,7 @@ public class FilterItemListAdapter extends BaseExpandableListAdapter {
         switch (groupPosition) {
             case 0:
                 try {
-                    if (sizeFilter.contains(childText)) {
+                    if (sizeFilter.contains("'" + childText + "'")) {
                         img.setVisibility(View.VISIBLE);
                     } else {
                         img.setVisibility(View.GONE);

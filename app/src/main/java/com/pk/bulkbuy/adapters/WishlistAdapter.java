@@ -17,6 +17,7 @@ import com.pk.bulkbuy.database.DB_Handler;
 import com.pk.bulkbuy.database.SessionManager;
 import com.pk.bulkbuy.pojo.Product;
 import com.pk.bulkbuy.utils.Constants;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -63,9 +64,14 @@ public class WishlistAdapter extends BaseAdapter {
         holder.title = rowView.findViewById(R.id.title);
         holder.price = rowView.findViewById(R.id.price);
         holder.remove = rowView.findViewById(R.id.remove);
+        holder.imageView = rowView.findViewById(R.id.wish_img);
 
         holder.title.setText(productList.get(position).getName());
         holder.price.setText(productList.get(position).getPrice_range());
+
+        String imageURL = productList.get(position).getImageURL();
+
+        Picasso.get().load(imageURL).fit().error(R.drawable.ic_image_grey600_36dp).into(holder.imageView);
 
         // Product Item Click
         holder.itemLay = rowView.findViewById(R.id.itemLay);
@@ -99,5 +105,6 @@ public class WishlistAdapter extends BaseAdapter {
         RelativeLayout itemLay;
         TextView title, price;
         ImageView remove;
+        ImageView imageView;
     }
 }

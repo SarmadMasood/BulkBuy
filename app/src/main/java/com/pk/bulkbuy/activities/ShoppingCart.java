@@ -13,6 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.pk.bulkbuy.MainActivity;
 import com.pk.bulkbuy.R;
 import com.pk.bulkbuy.adapters.ShoppingCartListAdapter;
@@ -24,6 +26,8 @@ import com.pk.bulkbuy.utils.Constants;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import static com.pk.bulkbuy.service.SyncDBService.charRemoveAt;
+
 /**
  * Created by Preeth on 1/6/2018
  */
@@ -31,11 +35,15 @@ import java.util.List;
 public class ShoppingCart extends AppCompatActivity implements ShoppingCartListAdapter.UpdatePayableAmount, ShoppingCartListAdapter.MonitorListItems {
 
     Toolbar toolbar;
+    FirebaseDatabase database;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_cart);
+
+        database = FirebaseDatabase.getInstance();
 
         // Set Toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -77,7 +85,19 @@ public class ShoppingCart extends AppCompatActivity implements ShoppingCartListA
             public void onClick(View view) {
                 // delete from cart and place order
                 db_handler.deleteCartItems();
+                for (int i=0;i<shoppingCart.size();i++){
+                    shoppingCart.get(i).setStatus("pending");
+                }
+                String sessionEmail = sessionManager.getSessionData(Constants.SESSION_EMAIL);
+
                 db_handler.insertOrderHistory(shoppingCart,sessionManager.getSessionData(Constants.SESSION_EMAIL));
+                sessionEmail = charRemoveAt(sessionEmail,sessionEmail.indexOf('.'));
+
+                DatabaseReference ordersRef = database.getReference().child("Orders").child(sessionEmail);
+                for(int j=0;j<shoppingCart.size();j++){
+                    ordersRef.child(shoppingCart.get(j).getId()).setValue(shoppingCart.get(j));
+                }
+
                 Toast.makeText(getApplicationContext(),"Order Placed Successfully",Toast.LENGTH_LONG).show();
 
                 // Call Main Activity

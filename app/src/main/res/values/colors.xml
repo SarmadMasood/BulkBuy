@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2873ed</color>
+    <color name="colorPrimaryDark">#2873ed</color>
+    <color name="colorAccent">#fb641b</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="border">#f1f5f7</color>
+    <color name="stroke">#e0e3e4</color>
+    <color name="circle_border">#FFBDBDBD</color>
+    <color name="sort_bar_background">#333333</color>
+    <color name="sort_bar_divider">#5c5c5c</color>
+    <color name="yellow">#fccb03</color>
+    <color name="transparent">#00000000</color>
+</resources>

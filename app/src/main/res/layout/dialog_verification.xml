@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dialogTittle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="19sp"
+        android:text="Verify Phone Number"
+        android:layout_marginTop="@dimen/defaultMargin"
+        android:layout_marginBottom="@dimen/defaultMargin"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        />
+
+    <EditText
+        android:id="@+id/codeEditText"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/defaultMargin"
+        android:layout_below="@+id/dialogTittle"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:hint="Enter verification code here."/>
+
+
+    <Button
+        android:id="@+id/verify"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/codeEditText"
+        android:layout_margin="@dimen/defaultMargin"
+        android:text="Verify" />
+
+</RelativeLayout>

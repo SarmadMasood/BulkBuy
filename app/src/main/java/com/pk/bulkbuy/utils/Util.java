@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.pk.bulkbuy.R;
+import com.pk.bulkbuy.service.SyncDBService;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -49,5 +50,19 @@ public class Util {
         } else {
             return context.getResources().getString(R.string.Error500);
         }
+    }
+
+    public static String getFormattedPhonenumber(String phone){
+        if (phone.charAt(0)=='0'){
+            phone = SyncDBService.charRemoveAt(phone,0);
+            phone = "+92"+phone;
+        }
+        else if(phone.charAt(0)=='+' && phone.charAt(1)=='9' && phone.charAt(2)=='2'){
+            return phone;
+        }
+        else if(phone.charAt(0)=='9' && phone.charAt(1)=='2'){
+            phone = "+"+phone;
+        }
+        return phone;
     }
 }

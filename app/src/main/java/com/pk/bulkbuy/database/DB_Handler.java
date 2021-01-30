@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.pk.bulkbuy.adapters.MyOrdersAdapter;
 import com.pk.bulkbuy.pojo.Cart;
 import com.pk.bulkbuy.pojo.Category;
 import com.pk.bulkbuy.pojo.Product;

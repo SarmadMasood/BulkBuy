@@ -87,7 +87,7 @@
                     android:layout_marginLeft="@dimen/defaultMargin"
                     android:hint="@string/mobile"
                     android:inputType="number"
-                    android:maxLength="10"
+                    android:maxLength="13"
                     android:maxLines="1"
                     android:singleLine="true" />
 
@@ -147,7 +147,7 @@
             android:visibility="invisible"
             android:id="@+id/blockSignUp"
             >
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -157,19 +157,22 @@
                     android:layout_width="wrap_content"
                     android:id="@+id/activityIndicator"
                     android:indeterminateOnly="true"
+                    android:layout_centerHorizontal="true"
                     android:keepScreenOn="true"
-                    android:layout_centerInParent="true"
                     android:visibility="visible"
                     android:layout_marginLeft="28dp"
                     />
                 <TextView
+                    android:id="@+id/loading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Signing up..."
+                    android:text="Loading..."
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/activityIndicator"
                     android:layout_marginTop="15dp"
                     android:textSize="20sp"
                     />
-            </LinearLayout>
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>

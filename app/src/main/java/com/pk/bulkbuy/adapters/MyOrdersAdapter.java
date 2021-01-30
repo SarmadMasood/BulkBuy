@@ -135,7 +135,9 @@ public class MyOrdersAdapter extends BaseAdapter {
         });
 
         // Hide Remove Button
-        //holder.remove.setVisibility(View.GONE);
+        int visible = View.VISIBLE;
+        visible = shoppingCart.get(position).getStatus().compareToIgnoreCase("verified")==0? View.GONE: View.VISIBLE;
+        holder.remove.setVisibility(visible);
         holder.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

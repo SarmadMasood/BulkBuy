@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -200,31 +201,74 @@ public class SyncDBService extends IntentService {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
-        final String uid = user.getUid();
-        final DatabaseReference ordersRef = database.getReference().child("Orders").child(uid);
-        if (uid!="" && uid!=null){
-            ordersRef.addValueEventListener(new ValueEventListener() {
-                DB_Handler db_handler = new DB_Handler(getApplicationContext());
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    List<Cart> storedOrders = db_handler.getOrders(uid);
-                    List<Cart> orders = new ArrayList<>();
-                    for (int i=0;i<storedOrders.size();i++){
-                        Cart order = snapshot.child(storedOrders.get(i).getId()).getValue(Cart.class);
+        if (user!=null) {
+            final String uid = user.getUid();
+            DatabaseReference ordersRef = database.getReference().child("Orders").child(uid);
+            if (uid!="" && uid!=null){
+                ordersRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        List<Cart> orders = new ArrayList<>();
+                        Cart order = snapshot.getValue(Cart.class);
+                        orders.add(order);
+                        db_handler.insertOrderHistory(orders,uid);
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        List<Cart> orders = new ArrayList<>();
+                        Cart order = snapshot.getValue(Cart.class);
                         if (order.getStatus().compareToIgnoreCase("verified")==0){
                             orders.add(order);
                         }
+                        db_handler.insertOrderHistory(orders,uid);
                     }
 
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                            db_handler.deleteOrder(snapshot.getKey());
+                    }
 
-                    db_handler.insertOrderHistory(orders,uid);
-                }
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                    }
 
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+//                ordersRef.addValueEventListener(new ValueEventListener() {
+//                    DB_Handler db_handler = new DB_Handler(getApplicationContext());
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        List<Cart> storedOrders = db_handler.getOrders(uid);
+//
+//                        for (int i=0;i<storedOrders.size();i++){
+//                            System.out.println(storedOrders.get(i).getId());
+//                            DatabaseReference subOrderRef = ordersRef.child(storedOrders.get(i).getId());
+//                            subOrderRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(@NonNull DatabaseError error) {
+//
+//                                }
+//                            });
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                    }
+//                });
+            }
         }
     }
 
